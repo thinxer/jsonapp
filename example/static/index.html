@@ -1,0 +1,17 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>JsonApp Example</title>
+    <script type="text/javascript" src="/_client.js"></script>
+</head>
+<body>
+    <script type="text/javascript">
+        var r = new JsonRemote("/api");
+        r.call("hello", ["JsonApp"], function(d) {
+            document.write(JSON.stringify(d));
+        });
+    </script>
+</body>
+</html>
+
