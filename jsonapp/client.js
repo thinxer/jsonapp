@@ -2,16 +2,17 @@ var JsonRemote = function(endpoint) {
     this.url = endpoint;
 };
 
-JsonRemote.prototype.call = function(method, params, success, error) {
+JsonRemote.prototype.call = function(method, params, callback) {
     var req = new XMLHttpRequest();
     req.open("POST", this.url, true);
     req.onreadystatechange = function() {
-        if (req.readyState == 4 && req.status == 200) {
-            var json = JSON.parse(req.responseText);
-            if (json.error && error)
-                error(json.error);
-            else
-                success(json.result);
+        if (req.readyState == 4) {
+            if (req.status == 200) {
+                var json = JSON.parse(req.responseText);
+                callback(json.error, json.result);
+            } else {
+                callback({ "code": req.status, "err": req.statusText }, req);
+            }
         }
     };
     req_data = {
