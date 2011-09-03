@@ -16,6 +16,6 @@ class DefaultWebApplication(Router):
         self.route("/static/.*", self.staticapp)
         with open(os.path.join(os.path.dirname(__file__), "./client.js")) as f:
             clientjs = f.read()
-        self.route("/_client.js", StaticContentApplication(clientjs))
+        self.route("/_client.js", StaticContentApplication(clientjs, 'application/javascript'))
         self.route("/api", self.jsonapp)
         self.route("/", Redirector("/static/index.html", self))

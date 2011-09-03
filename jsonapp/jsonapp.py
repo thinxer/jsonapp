@@ -29,13 +29,13 @@ class JsonApplication(object):
             return []
         cookie = env.get('HTTP_COOKIE')
         raw_data = env['wsgi.input'].read()
-        start_response('200 OK', []);
         try:
             request = json.loads(raw_data)
         except:
             start_response('400 Bad Request', [])
             return []
 
+        start_response('200 OK', [('Content-Type', 'application/json')])
         rid = request.get('id')
         ret = {}
         if rid: ret['id'] = rid
