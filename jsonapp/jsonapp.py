@@ -9,18 +9,23 @@ class JsonApplication(object):
 
     def __init__(self):
         self.handlers = {}
+        self.register(self.list_methods, 'rpc.listMethods')
+
+    def list_methods(self):
+        return self.handlers.keys()
 
     def register(self, func, path = None):
         if not path:
             path = func.func_name
         self.handlers[path] = func
+        return func
 
     def decorator(self, func = None):
         if isinstance(func, str):
             path = func
             return lambda func: self.register(func, path)
         else:
-            self.register(func)
+            return self.register(func)
 
     def __call__(self, env, start_response):
         method = env.get('REQUEST_METHOD', 'GET')
