@@ -7,9 +7,17 @@ __all__ = ['JsonApplication']
 
 class JsonApplication(object):
 
-    def __init__(self):
+    def __init__(self, jsonencoder = None, jsondecoder = None):
         self.handlers = {}
         self.register(self.list_methods, 'rpc.listMethods')
+        if jsonencoder:
+            self.dumps = jsonencoder
+        else:
+            self.dumps = json.dumps
+        if jsondecoder:
+            self.loads = jsondecoder
+        else:
+            self.loads = json.loads
 
     def list_methods(self):
         return self.handlers.keys()
@@ -35,7 +43,7 @@ class JsonApplication(object):
         cookie = env.get('HTTP_COOKIE')
         raw_data = env['wsgi.input'].read()
         try:
-            request = json.loads(raw_data)
+            request = self.loads(raw_data)
         except:
             start_response('400 Bad Request', [])
             return []
@@ -50,7 +58,7 @@ class JsonApplication(object):
             ret['result'] = self.handlers[method](*params)
         except Exception, e:
             ret['error'] = str(e)
-        return [json.dumps(ret)]
+        return [self.dumps(ret)]
 
 def test():
     application = JsonApplication()
