@@ -10,14 +10,14 @@ JsonRemote.prototype.call = function(method, params, callback) {
             if (req.status == 200) {
                 var json = JSON.parse(req.responseText);
                 callback(json.error, json.result);
-            } else {
-                callback({ "code": req.status, "err": req.statusText }, req);
+            } else if (req.status > 0) {
+                callback({ "code": req.status, "err": req.statusText }, req.responseText, req);
             }
         }
     };
     req_data = {
         "method": method,
-        "params": params
+        "params": params || []
     };
     req.send(JSON.stringify(req_data));
 };
