@@ -21,7 +21,6 @@ class StaticFileApplication(object):
                 yield f.read()
         else:
             start_response('404 Not Found', [])
-            yield ''
 
 class StaticContentApplication(object):
     def __init__(self, content, content_type = None):
@@ -32,4 +31,4 @@ class StaticContentApplication(object):
 
     def __call__(self, env, start_response):
         start_response('200 OK', self.headers)
-        return self.content
+        yield self.content

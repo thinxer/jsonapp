@@ -1,6 +1,9 @@
-import urllib2
+import sys
+if sys.version_info.major == 3:
+    from urllib.request import Request, urlopen
+else:
+    from urllib2 import Request, urlopen
 import json
-import hashlib
 
 __all__ = ['Remote']
 
@@ -20,16 +23,21 @@ class Remote(object):
     @property
     def __methods__(self):
         if not self._methods:
-            self._methods = map(str, self._request('rpc.listMethods'))
+            self._methods = self._request('rpc.listMethods')
         return self._methods
 
+    @property
+    def __dict__(self):
+        return {method: getattr(self, method) for method in self.__methods__}
+
     def _request(self, name, params = []):
-        req = urllib2.Request(self._url, json.dumps({
+        content = json.dumps({
             'method': name,
             'params': params
-            }))
-        resp = urllib2.urlopen(req)
-        response = json.load(resp)
+            }).encode('utf8')
+        req = Request(self._url, content)
+        resp = urlopen(req)
+        response = json.loads(resp.read().decode('utf8'))
         if 'error' in response:
             raise Exception(response['error'])
         else:
@@ -38,8 +46,9 @@ class Remote(object):
     def _generalmethod(self, name):
         def generalmethod(*args):
             return self._request(name, args)
-        generalmethod.func_name = name
+        generalmethod.__name__ = name
         return generalmethod
 
-#r = Remote("http://localhost:8080/api")
-#r.hello("JsonApp")
+if __name__ == '__main__':
+    r = Remote("http://localhost:8080")
+    #r.hello("JsonApp")

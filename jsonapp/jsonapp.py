@@ -1,7 +1,4 @@
-try:
-    import json
-except:
-    from django.utils import simplejson as json
+import json
 
 __all__ = ['JsonApplication']
 
@@ -20,11 +17,11 @@ class JsonApplication(object):
             self.loads = json.loads
 
     def list_methods(self):
-        return self.handlers.keys()
+        return list(self.handlers.keys())
 
     def register(self, func, path = None):
         if not path:
-            path = func.func_name
+            path = func.__name__
         self.handlers[path] = func
         return func
 
@@ -41,10 +38,13 @@ class JsonApplication(object):
             start_response('400 Bad Request', [])
             return []
         cookie = env.get('HTTP_COOKIE')
-        raw_data = env['wsgi.input'].read()
+        length = int(env.get('CONTENT_LENGTH', -1))
+        raw_data = env['wsgi.input'].read(length)
         try:
-            request = self.loads(raw_data)
+            request = self.loads(raw_data.decode('utf8'))
         except:
+            import traceback
+            traceback.print_exc()
             start_response('400 Bad Request', [])
             return []
 
@@ -56,9 +56,9 @@ class JsonApplication(object):
             method = request['method']
             params = request['params']
             ret['result'] = self.handlers[method](*params)
-        except Exception, e:
+        except Exception as e:
             ret['error'] = str(e)
-        return [self.dumps(ret)]
+        return [self.dumps(ret).encode('utf8')]
 
 def test():
     application = JsonApplication()

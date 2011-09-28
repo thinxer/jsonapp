@@ -13,7 +13,7 @@ class Router(object):
                 return app(env, start_response)
 
         start_response('404 Not Found', [])
-        return ['']
+        return []
 
     def route(self, path, app):
         self.handlers.append( (re.compile('^' + path + '$'), app) )

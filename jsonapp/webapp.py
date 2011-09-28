@@ -1,7 +1,7 @@
-from router import Router
-from jsonapp import JsonApplication
-from staticapp import StaticFileApplication, StaticContentApplication
-from redirector import Redirector
+from .router import Router
+from .jsonapp import JsonApplication
+from .staticapp import StaticFileApplication, StaticContentApplication
+from .redirector import Redirector
 
 import os.path
 
@@ -14,7 +14,7 @@ class DefaultWebApplication(Router):
 
         Router.__init__(self)
         self.route("/static/.*", self.staticapp)
-        with open(os.path.join(os.path.dirname(__file__), "./client.js")) as f:
+        with open(os.path.join(os.path.dirname(__file__), "./client.js"), 'rb') as f:
             clientjs = f.read()
         self.route("/_client.js", StaticContentApplication(clientjs, 'application/javascript'))
         self.route("/api", self.jsonapp)
