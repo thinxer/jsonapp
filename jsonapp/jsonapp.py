@@ -1,4 +1,5 @@
 import json
+import traceback
 
 __all__ = ['JsonApplication']
 
@@ -43,7 +44,6 @@ class JsonApplication(object):
         try:
             request = self.loads(raw_data.decode('utf8'))
         except:
-            import traceback
             traceback.print_exc()
             start_response('400 Bad Request', [])
             return []
@@ -57,6 +57,7 @@ class JsonApplication(object):
             params = request['params']
             ret['result'] = self.handlers[method](*params)
         except Exception as e:
+            traceback.print_exc()
             ret['error'] = str(e)
         return [self.dumps(ret).encode('utf8')]
 
