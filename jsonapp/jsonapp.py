@@ -1,7 +1,17 @@
 import json
 import traceback
 
-__all__ = ['JsonApplication']
+__all__ = ['JsonError', 'JsonApplication']
+
+
+class JsonError(Exception):
+
+    def __init__(self, code, name, description = None):
+        Exception.__init__(self, code, name, description)
+        self.code = code
+        self.name = name
+        self.description = description
+
 
 class JsonApplication(object):
 
@@ -56,10 +66,21 @@ class JsonApplication(object):
             method = request['method']
             params = request['params']
             ret['result'] = self.handlers[method](*params)
+        except JsonError as e:
+            ret['error'] = {
+                    'code': e.code,
+                    'name': e.name,
+                    'description': e.description
+                    }
         except Exception as e:
             traceback.print_exc()
-            ret['error'] = str(e)
+            ret['error'] = {
+                    'code': -500,
+                    'name': 'unknown exception',
+                    'description': str(e)
+                    }
         return [self.dumps(ret).encode('utf8')]
+
 
 def test():
     application = JsonApplication()
