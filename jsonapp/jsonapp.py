@@ -76,7 +76,7 @@ class JsonApplication(object):
             traceback.print_exc()
             ret['error'] = {
                     'code': -500,
-                    'name': 'unknown exception',
+                    'name': e.__class__.__name__,
                     'description': str(e)
                     }
         return [self.dumps(ret).encode('utf8')]
