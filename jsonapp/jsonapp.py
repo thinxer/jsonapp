@@ -13,6 +13,23 @@ class JsonError(Exception):
         self.description = description
 
 
+class JsonApplicationDecorator(object):
+
+    def __init__(self, app, basename = ''):
+        self.app = app
+        self.basename = basename
+
+    def __call__(self, o):
+        if isinstance(o, str):
+            if self.basename and o:
+                newname = self.basename + '.' + o
+            else:
+                newname = self.basename or o
+            return JsonApplicationDecorator(self.app, newname)
+        elif hasattr(o, '__call__'):
+            child = self(o.__name__)
+            child.app.register(o, child.basename)
+
 class JsonApplication(object):
 
     def __init__(self, jsonencoder = None, jsondecoder = None):
@@ -31,17 +48,12 @@ class JsonApplication(object):
         return list(self.handlers.keys())
 
     def register(self, func, path = None):
-        if not path:
-            path = func.__name__
+        path = path or func.__name__
         self.handlers[path] = func
         return func
 
-    def decorator(self, func = None):
-        if isinstance(func, str):
-            path = func
-            return lambda func: self.register(func, path)
-        else:
-            return self.register(func)
+    def decorator(self):
+        return JsonApplicationDecorator(self)
 
     def __call__(self, env, start_response):
         method = env.get('REQUEST_METHOD', 'GET')
@@ -84,13 +96,13 @@ class JsonApplication(object):
 
 def test():
     application = JsonApplication()
-    api = application.decorator
+    api = application.decorator()
 
     @api
     def add(x, y):
         return x + y
 
-    @api("m")
+    @api('o')
     def mul(x, y):
         return x * y
 

@@ -6,7 +6,7 @@ Example server code:
     from jsonapp import DefaultWebApplication, serve
 
     application = DefaultWebApplication()
-    api = application.jsonapp.decorator
+    api = application.jsonapp.decorator()
 
     @api
     def hello(name):
