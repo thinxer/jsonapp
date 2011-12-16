@@ -8,9 +8,9 @@ import os.path
 __all__ = ["DefaultWebApplication"]
 
 class DefaultWebApplication(Router):
-    def __init__(self):
+    def __init__(self, jsonapp = None):
         self.staticapp = StaticFileApplication(".")
-        self.jsonapp = JsonApplication()
+        self.jsonapp = jsonapp or JsonApplication()
 
         Router.__init__(self)
         self.route("/static/.*", self.staticapp)
