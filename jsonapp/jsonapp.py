@@ -29,6 +29,7 @@ class JsonApplicationDecorator(object):
         elif hasattr(o, '__call__'):
             child = self(o.__name__)
             child.app.register(o, child.basename)
+            return o
 
 class JsonApplication(object):
 
