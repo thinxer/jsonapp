@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>JsonApp by thinxer</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/thinxer/jsonapp">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/thinxer/jsonapp/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/thinxer/jsonapp/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>JsonApp</h1>
+          <p>simplest json api framework</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/thinxer">thinxer</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <p>A KISS WSGI application built to make pure AJAX application easier.</p>
+
+<p>Example server code:</p>
+
+<pre><code># server.py
+from jsonapp import DefaultWebApplication, serve
+
+application = DefaultWebApplication()
+api = application.jsonapp.decorator()
+
+@api
+def hello(name):
+    return { "hello":name }
+
+serve(application, "127.0.0.1", 8080)
+</code></pre>
+
+<p>Example JavaScript client code:</p>
+
+<pre><code>// include the script '/_client.js' first.
+var r = new JsonRemote("/api");
+r.call("hello", ["JsonApp"], function(err, d) {
+    if (err) {
+        document.write(JSON.stringify(err));
+    } else {
+        document.write(JSON.stringify(d));
+    }
+});
+</code></pre>
+
+<p>Example Python client code:</p>
+
+<pre><code>from jsonapp import Remote
+r = Remote('http://localhost:8080/api')
+r.hello('world')
+</code></pre>
+
+<p>The <code>r</code> object is tab-completable in IPython, which is quite handy.</p>
+
+<p>The entire framework is designed to be easy to use, and no easier.
+To speed up development, it also comes with a static file server. Drop your
+static files into <code>static</code> directory and your app is up and running.
+<code>index.html</code> will be automatically mapped to the root path <code>/</code>.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
